@@ -1,0 +1,43 @@
+version: '3'
+volumes: 
+    dados:
+services: 
+    db:
+        image: postgres:9.6
+        volumes: 
+            # volume de dados
+            - dados:/var/lib/postgresql/data
+            # scripts
+            - ./scripts:/scripts
+            - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    frontend:
+        image: nginx:1.13
+        volumes:
+            # site
+            - ./web:/usr/share/nginx/html/
+            # configuracao do proxy reverso
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - 80:80
+    app:
+        image: python:3.6
+        volumes:
+            # aplicacao
+            - ./app:/app
+        working_dir: /app
+        # precisa do bash para ter a permissao de execucao
+        command: bash ./app.sh
+        # com o proxy reverso nao precisa mais compartilhar essa porta
+        #ports:
+        #    - 8080:8080
+
+
+# rodar no modo daemon
+# docker-compose up -d     
+# docker-compose -ps (listando os em execucao)
+# executando comando no serviço db. Ex. listando os bancos existentes
+# docker-compose exec db psql -U postgres -c '\l'
+# encerrar
+# docker-compose down
+# docker-compose exec db psql -U postgres -f /scripts/check.sql
+# docker-compose logs -f -t
