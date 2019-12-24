@@ -1,0 +1,4 @@
+# vai ocorrer um erro (403) devido a pasta not-found nao existir
+docker container run -p 8080:80 -v $(pwd)/not-found:/usr/share/nginx/html nginx
+# comando correto para substituir o html inicial do nginx
+docker container run -p 8080:80 -v $(pwd)/html:/usr/share/nginx/html nginx
