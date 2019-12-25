@@ -43,7 +43,7 @@ services:
             - web
             - banco
         depends_on: 
-            - bd
+            - db
 
 
 # rodar no modo daemon
