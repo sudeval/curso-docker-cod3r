@@ -1,8 +1,6 @@
 import psycopg2
 import redis
 import json
-# os -> para user variaveis de ambiente
-import os
 # com o worker e redis nao vai mais ser utilizado o route e run, apenas Bottle
 # from bottle import route, run, request
 from bottle import Bottle, request
@@ -15,17 +13,12 @@ class Sender(Bottle):
         super().__init__()
         # fazendo o que era feito com @route
         self.route('/', method='POST', callback=self.send)
-        redis_host = os.getenv('REDIS_HOST', 'queue')
         # host é o nome do serviço queue
-        self.fila = redis.StrictRedis(host=redis_host, port=6379, db=0)
+        self.fila = redis.StrictRedis(host='queue', port=6379, db=0)
 
-        db_host = os.getenv('DB_HOST', 'db')
-        db_user = os.getenv('DB_USER', 'postgres')
-        # name errado de proposito para teste da ordem no uso, esses valores são padrões apenas
-        # se nao tiver sido definido
-        db_name = os.getenv('DB_NAME', 'sender')
-        dsn = f'dbname={db_name} user={db_user} host={db_host}'
-        self.conn = psycopg2.connect(dsn)
+        # data source naming / db (nome do serviço) no host é para evitar definir um IP.
+        DSN = 'dbname=email_sender user=postgres host=db'
+        self.conn = psycopg2.connect(DSN)
 
     def register_message(self, assunto, mensagem):
         SQL = 'INSERT INTO emails (assunto, mensagem) VALUES (%s, %s)'
