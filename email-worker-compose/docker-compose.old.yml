@@ -52,17 +52,12 @@ services:
         networks: 
             - fila
     worker:
-        # a imagem precisou ser modificada, passando a user a configuracao do Dockerfile
-        # image: python:3.6
-        # vai procurar dentro da pasta worker o Dockerfile
-        build: worker
+        image: python:3.6
         volumes:
             # worker
             - ./worker:/worker
         working_dir: /worker
-        # devido a mudança no uso da imagem (+ de uma instancia do worker)
-        # command: bash ./app.sh
-        command: worker.py
+        command: bash ./app.sh
         networks: 
             - fila
         depends_on: 
@@ -78,6 +73,3 @@ services:
 # docker-compose down
 # docker-compose exec db psql -U postgres -f /scripts/check.sql
 # docker-compose logs -f -t
-# subindo 3 instancias do servico worker
-# docker-compose up -d --scale worker=3
-# docker-compose logs -f -t worker
